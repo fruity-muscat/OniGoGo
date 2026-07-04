@@ -1,0 +1,1024 @@
+:root {
+  /* 選択中の拡大率 */
+  --selected-scale: 1.15;
+
+  /* 配置候補の発光色 */
+  --placement-color: rgba(76, 175, 80, 0.45);
+}
+
+/* ==========================
+   アニメーション
+========================== */
+
+@keyframes selectablePulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.18);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ==========================
+   アニメーションここまで
+========================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #f4f4f4;
+
+  font-family: sans-serif;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  min-height: 100vh;
+}
+
+#app {
+  width: 100%;
+
+  max-width: 480px;
+
+  min-height: 100vh;
+
+  background: white;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  font-size: 32px;
+
+  font-weight: bold;
+}
+
+.screen {
+  width: 100%;
+
+  padding: 24px;
+
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 24px;
+}
+
+p {
+  margin-bottom: 32px;
+
+  line-height: 1.8;
+}
+
+button {
+  padding: 12px 32px;
+
+  font-size: 18px;
+
+  cursor: pointer;
+}
+
+/* ==========================
+   ゲーム画面
+========================== */
+
+.gameHeader {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 16px;
+
+  font-weight: bold;
+}
+
+.gameFooter {
+  margin-bottom: 16px;
+}
+
+/* ==========================
+   マップ
+========================== */
+
+#mapArea {
+  display: grid;
+
+  grid-template-columns: repeat(11, 1fr);
+  grid-template-rows: repeat(11, 1fr);
+
+  gap: 2px;
+
+  width: 100%;
+  height: 420px;
+
+  border: solid 2px #444;
+  border-radius: 8px;
+
+  margin-bottom: 16px;
+}
+
+/* 建物 */
+
+.building {
+  background: #d9c8a1;
+
+  border-radius: 4px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  font-size: 22px;
+}
+
+/* 十字路 */
+
+.crossroad {
+  background: #666;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  font-size: 18px;
+}
+
+.placementTarget {
+  background: var(--placement-color);
+
+  box-shadow: 0 0 12px var(--placement-color);
+
+  cursor: pointer;
+
+  animation: selectablePulse 1s infinite;
+}
+
+/* 道 */
+
+.road {
+  background: #bcbcbc;
+}
+
+/* ==========================
+   配置エリア
+========================== */
+
+#placementArea {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 12px;
+
+  margin: 16px 0;
+}
+
+.placementPiece {
+  width: 56px;
+
+  height: 56px;
+
+  border: solid 2px #666;
+
+  border-radius: 8px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  align-items: center;
+
+  cursor: pointer;
+}
+
+.pieceIcon {
+  font-size: 26px;
+
+  transition: 0.2s;
+}
+
+.pieceNumber {
+  font-size: 16px;
+
+  font-weight: bold;
+
+  line-height: 1;
+}
+
+.pieceCount {
+  font-size: 11px;
+
+  font-weight: bold;
+
+  line-height: 1;
+
+  color: #ffffff;
+
+  text-shadow: 1px 1px 2px #000000;
+}
+
+.selectedPiece {
+  transform: scale(1.15);
+
+  filter: brightness(1.2);
+
+  text-shadow:
+    0 0 4px #ffffff,
+    0 0 8px #ffffff;
+
+  transition: all 0.2s;
+}
+
+.selectedPiece .pieceIcon {
+  transform: scale(var(--selected-scale));
+
+  filter: drop-shadow(0 0 6px gold);
+}
+
+.mapPiece {
+  cursor: pointer;
+
+  user-select: none;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  transition: all 0.2s;
+}
+
+.draggingPiece {
+  opacity: 0.5;
+
+  transform: scale(1.2);
+
+  z-index: 100;
+
+  transition: none;
+}
+
+/* ==========================
+   ドラッグGhost
+========================== */
+
+.dragGhost {
+  position: fixed;
+
+  left: 0;
+
+  top: 0;
+
+  transform: translate(-50%, -65%);
+
+  pointer-events: none;
+
+  z-index: 9999;
+
+  font-size: 34px;
+
+  opacity: 0.85;
+
+  filter: drop-shadow(0 0 6px #ffffff);
+
+  transition: none;
+}
+
+/* ==========================
+   ドラッグUX
+========================== */
+
+.dragTarget {
+  background: var(--placement-color);
+
+  box-shadow: 0 0 12px var(--placement-color);
+
+  cursor: pointer;
+
+  animation: selectablePulse 1s infinite;
+}
+
+.draggingPiece {
+  opacity: 0.35;
+
+  filter: grayscale(0.2);
+
+  transition: none;
+}
+
+/* ==========================
+   人間コマ
+========================== */
+
+.building .mapPiece {
+  margin-top: 2px;
+
+  font-size: 18px;
+}
+
+/* ==========================
+   パネルメニューボタン
+========================== */
+
+.panelMenuButtons {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 12px;
+
+  margin: 12px 0;
+}
+
+.panelMenuButton {
+  padding: 10px 24px;
+
+  font-size: 16px;
+
+  cursor: pointer;
+}
+
+/* ==========================
+   ゲーム下部パネル調整
+========================== */
+
+#gamePanel {
+  height: 190px;
+
+  min-height: 190px;
+
+  margin-top: 12px;
+
+  border: solid 2px #444;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  display: flex;
+
+  align-items: stretch;
+
+  overflow: hidden;
+}
+
+.gamePanel {
+  width: 100%;
+
+  height: 100%;
+
+  padding: 12px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  align-items: center;
+
+  text-align: center;
+}
+
+.panelTitle {
+  font-size: 24px;
+
+  font-weight: bold;
+
+  margin-bottom: 6px;
+}
+
+.panelMessages {
+  font-size: 20px;
+
+  font-weight: bold;
+
+  line-height: 1.4;
+
+  min-height: 54px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+}
+
+#actionButton,
+.panelMenuButton {
+  min-width: 120px;
+
+  padding: 8px 18px;
+
+  font-size: 16px;
+
+  border-radius: 6px;
+}
+
+/* ==========================
+   重複コマ表示
+========================== */
+
+.stackedPieces {
+  position: relative;
+
+  width: 100%;
+
+  height: 100%;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
+
+.stackedPiece {
+  position: absolute;
+
+  font-size: 18px;
+}
+
+.stackedPiece:nth-child(1) {
+  top: 1px;
+}
+
+.stackedPiece:nth-child(2) {
+  top: 13px;
+}
+
+.stackedPiece:nth-child(3) {
+  top: 25px;
+}
+
+.stackedPiece:nth-child(4) {
+  top: 37px;
+}
+
+.stackedPieces .pieceCount {
+  position: absolute;
+
+  right: 0;
+
+  bottom: 0;
+
+  font-size: 11px;
+}
+
+/* ==========================
+   下部パネル内ボタン調整
+========================== */
+
+.panelMenuButtons {
+  margin: 8px 0;
+
+  gap: 10px;
+}
+
+#actionButton,
+.panelMenuButton {
+  min-width: 110px;
+
+  padding: 6px 16px;
+
+  font-size: 15px;
+}
+
+.panelMessages {
+  line-height: 1.25;
+
+  min-height: 42px;
+}
+
+/* ==========================
+   探索対象
+========================== */
+
+.searchTarget {
+  background: rgba(244, 67, 54, 0.45);
+
+  box-shadow: 0 0 12px rgba(244, 67, 54, 0.65);
+
+  animation: selectablePulse 1s infinite;
+
+  cursor: pointer;
+}
+
+/* ==========================
+   ターン終了ボタン
+========================== */
+
+.turnEndButton {
+  margin-top: 8px;
+
+  min-width: 120px;
+
+  padding: 8px 18px;
+
+  font-size: 15px;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+}
+
+.turnEndButton:disabled,
+.turnEndButton[disabled] {
+  opacity: 0.35;
+
+  cursor: not-allowed;
+}
+
+#gamePanel {
+  height: 185px;
+
+  min-height: 185px;
+}
+
+.gamePanel {
+  padding: 8px 12px;
+
+  justify-content: center;
+
+  overflow: hidden;
+}
+
+.panelTitle {
+  font-size: 21px;
+
+  margin-bottom: 4px;
+}
+
+.panelMessages {
+  font-size: 18px;
+
+  line-height: 1.25;
+
+  min-height: 38px;
+}
+
+.panelMenuButtons {
+  margin: 6px 0;
+
+  gap: 10px;
+}
+
+#actionButton,
+.panelMenuButton,
+.turnEndButton {
+  min-width: 110px;
+
+  padding: 6px 14px;
+
+  font-size: 15px;
+
+  margin-top: 4px;
+}
+
+/* ==========================
+   足跡
+========================== */
+
+.footprint {
+  font-size: 16px;
+
+  opacity: 0.75;
+
+  margin-top: 2px;
+}
+
+/* ==========================
+   行動済みグレー表示
+========================== */
+
+.actedPiece {
+  opacity: 0.45;
+
+  filter: grayscale(1);
+}
+
+/* ==========================
+   ゲームヘッダー
+========================== */
+
+.gameHeader {
+  border: solid 2px #444;
+
+  border-radius: 8px;
+
+  padding: 8px 12px;
+
+  margin-bottom: 12px;
+
+  background: #ffffff;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.gameHeaderMain {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  font-size: 20px;
+
+  font-weight: bold;
+}
+
+.gameHeaderSub {
+  font-size: 15px;
+
+  font-weight: bold;
+
+  text-align: left;
+
+  color: #1565c0;
+}
+
+/* ==========================
+   満潮プレビュー
+========================== */
+
+.sinkPreview {
+  background: rgba(33, 150, 243, 0.45) !important;
+
+  box-shadow: inset 0 0 10px rgba(33, 150, 243, 0.8);
+
+  animation: tidePulse 1s infinite;
+}
+
+@keyframes tidePulse {
+  0% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 0.9;
+  }
+
+  100% {
+    opacity: 0.45;
+  }
+}
+
+/* ==========================
+   沈没済みマス
+========================== */
+
+.sunkCell {
+  background: rgba(33, 150, 243, 0.35) !important;
+
+  box-shadow: inset 0 0 8px rgba(33, 150, 243, 0.65);
+}
+
+/* ==========================
+   デバッグモード
+========================== */
+
+#debugButton {
+  position: fixed;
+
+  top: 8px;
+
+  right: 8px;
+
+  z-index: 99999;
+
+  padding: 6px 10px;
+
+  font-size: 12px;
+
+  border-radius: 6px;
+
+  background: #222;
+
+  color: #fff;
+}
+
+#debugPanel {
+  position: fixed;
+
+  top: 48px;
+
+  right: 8px;
+
+  width: 260px;
+
+  max-height: 80vh;
+
+  overflow-y: auto;
+
+  z-index: 99999;
+
+  padding: 12px;
+
+  border: solid 2px #444;
+
+  border-radius: 8px;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.debugTitle {
+  font-size: 16px;
+
+  font-weight: bold;
+
+  margin-bottom: 10px;
+}
+
+.debugSection {
+  margin-bottom: 12px;
+}
+
+.debugSectionTitle {
+  font-size: 13px;
+
+  font-weight: bold;
+
+  margin-bottom: 6px;
+}
+
+.debugButtonGrid {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 4px;
+}
+
+#debugPanel button {
+  padding: 5px 6px;
+
+  font-size: 12px;
+}
+
+/* ==========================
+   ゲーム終了画面
+========================== */
+
+.gameOverScreen {
+  border: solid 2px #444;
+
+  border-radius: 12px;
+
+  padding: 24px 16px;
+
+  background: #ffffff;
+
+  text-align: center;
+}
+
+.gameOverScreen h2 {
+  font-size: 28px;
+
+  margin-bottom: 16px;
+}
+
+.gameOverMessages {
+  font-size: 18px;
+
+  font-weight: bold;
+
+  margin-bottom: 24px;
+}
+
+.gameOverMessages p {
+  margin: 8px 0;
+}
+
+/* ==========================
+   リザルト情報
+========================== */
+
+.resultInfo {
+  margin: 20px 0;
+
+  border-top: solid 1px #ccc;
+
+  border-bottom: solid 1px #ccc;
+
+  padding: 12px 0;
+}
+
+.resultInfoRow {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 6px 4px;
+
+  font-size: 16px;
+}
+
+.resultInfoRow span {
+  font-weight: bold;
+}
+
+.resultInfoRow strong {
+  font-size: 17px;
+}
+
+/* ==========================
+   リプレイ画面
+========================== */
+
+.replayHeader {
+  border: solid 2px #444;
+
+  border-radius: 8px;
+
+  padding: 8px 12px;
+
+  margin-bottom: 12px;
+
+  background: #ffffff;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  font-size: 18px;
+
+  font-weight: bold;
+}
+
+.replayControls {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  margin: 10px 0;
+}
+
+.replayControls button,
+.replayDayButtons button,
+#replayExitButton {
+  padding: 8px 12px;
+
+  font-size: 15px;
+
+  border-radius: 6px;
+}
+
+.replayDayButtons {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  margin: 10px 0;
+}
+
+/* ==========================
+   リプレイマップ
+========================== */
+
+#replayMapArea {
+  display: grid;
+
+  grid-template-columns: repeat(11, 1fr);
+  grid-template-rows: repeat(11, 1fr);
+
+  gap: 2px;
+
+  width: 100%;
+  height: 420px;
+
+  border: solid 2px #444;
+  border-radius: 8px;
+
+  margin-bottom: 12px;
+
+  overflow: hidden;
+}
+
+/* ==========================
+   リプレイ探索表示
+========================== */
+
+.replaySearchTarget {
+  background: rgba(244, 67, 54, 0.45) !important;
+
+  box-shadow: 0 0 12px rgba(244, 67, 54, 0.65);
+
+  animation: selectablePulse 1s infinite;
+}
+
+/* ==========================
+   リプレイ人間ルート
+========================== */
+
+.replayHumanRoute {
+  outline: dashed 2px rgba(76, 175, 80, 0.9);
+
+  outline-offset: -4px;
+}
+
+/* ==========================
+   リプレイニアミス表示
+========================== */
+
+.replayNearMiss {
+  background: rgba(255, 235, 59, 0.75) !important;
+
+  box-shadow: 0 0 14px rgba(255, 193, 7, 0.9);
+
+  animation: selectablePulse 1s infinite;
+}
+
+/* ==========================
+   リプレイニアミス点線
+========================== */
+
+#replayMapArea {
+  position: relative;
+}
+
+.replayNearMissLine {
+  position: absolute;
+
+  pointer-events: none;
+
+  z-index: 30;
+
+  animation: selectablePulse 1s infinite;
+}
+
+/* 右 */
+
+.replayNearMissLine-right {
+  width: calc(200% / 11);
+  height: 0;
+
+  border-top: dashed 3px rgba(255, 193, 7, 0.95);
+}
+
+/* 左 */
+
+.replayNearMissLine-left {
+  width: calc(200% / 11);
+  height: 0;
+
+  border-top: dashed 3px rgba(255, 193, 7, 0.95);
+}
+
+/* 下 */
+
+.replayNearMissLine-down {
+  width: 0;
+  height: calc(200% / 11);
+
+  border-left: dashed 3px rgba(255, 193, 7, 0.95);
+}
+
+/* 上 */
+
+.replayNearMissLine-up {
+  width: 0;
+  height: calc(200% / 11);
+
+  border-left: dashed 3px rgba(255, 193, 7, 0.95);
+}
