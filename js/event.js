@@ -5,6 +5,10 @@
 // =========================
 
 function onPlacementPieceClick(event) {
+  if (gameState.inputLocked) {
+    return;
+  }
+
   if (gameState.drag.suppressClick) {
     gameState.drag.suppressClick = false;
     return;
@@ -22,6 +26,10 @@ function onPlacementPieceClick(event) {
 // =========================
 
 function onPlacementPiecePointerDown(event) {
+  if (gameState.inputLocked) {
+    return;
+  }
+
   event.preventDefault();
 
   const id = Number(event.currentTarget.dataset.id);
@@ -34,6 +42,10 @@ function onPlacementPiecePointerDown(event) {
 // =========================
 
 function onMapPieceClick(event) {
+  if (gameState.inputLocked) {
+    return;
+  }
+
   if (gameState.drag.suppressClick) {
     gameState.drag.suppressClick = false;
     return;
@@ -93,6 +105,10 @@ function onMapPieceClick(event) {
 // =========================
 
 function onMapPiecePointerDown(event) {
+  if (gameState.inputLocked) {
+    return;
+  }
+
   if (gameState.phase === "oniTurn") {
     return;
   }
@@ -110,6 +126,10 @@ function onMapPiecePointerDown(event) {
 // =========================
 
 function onCrossroadClick(event) {
+  if (gameState.inputLocked) {
+    return;
+  }
+
   if (
     typeof handleDebugPlacement === "function" &&
     handleDebugPlacement(
@@ -121,7 +141,11 @@ function onCrossroadClick(event) {
     return;
   }
 
-  if (gameState.phase === "oniTurn" && gameState.turn.actionMode === "move") {
+  if (
+    gameState.phase === "oniTurn" &&
+    (gameState.turn.actionMode === "move" ||
+      gameState.turn.actionMode === "oniReady")
+  ) {
     selectOniMoveTarget(event);
     return;
   }
@@ -138,6 +162,10 @@ function onCrossroadClick(event) {
 // =========================
 
 function onBuildingClick(event) {
+  if (gameState.inputLocked) {
+    return;
+  }
+
   if (
     typeof handleDebugPlacement === "function" &&
     handleDebugPlacement(
@@ -157,7 +185,11 @@ function onBuildingClick(event) {
     return;
   }
 
-  if (gameState.phase === "oniTurn" && gameState.turn.actionMode === "search") {
+  if (
+    gameState.phase === "oniTurn" &&
+    (gameState.turn.actionMode === "search" ||
+      gameState.turn.actionMode === "oniReady")
+  ) {
     selectOniSearchTarget(event);
     return;
   }
@@ -626,7 +658,15 @@ function confirmHumanMove() {
     return;
   }
 
-  addFootprint(human.position.row, human.position.col);
+  addFootprint(human.position.row, human.position.col, {
+    humanId,
+    kind: human.hasMovedOnce ? "normal" : "start",
+  });
+
+  const from = {
+    row: human.position.row,
+    col: human.position.col,
+  };
 
   human.position = {
     row: move.row,
@@ -635,8 +675,13 @@ function confirmHumanMove() {
 
   human.moved = true;
 
+  human.hasMovedOnce = true;
+
   addReplayHistory("humanMove", {
     humanId,
+
+    from,
+
     to: {
       row: move.row,
       col: move.col,

@@ -231,7 +231,7 @@ function createDragGhost(pieceId) {
 
   ghost.className = "dragGhost";
 
-  ghost.textContent = getPieceIcon(gameState.placement.pieceType);
+  ghost.innerHTML = getPieceIcon(gameState.placement.pieceType);
 
   ghost.dataset.id = pieceId;
 

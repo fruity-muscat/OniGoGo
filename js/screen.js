@@ -6,21 +6,33 @@
 
 function renderTitleScreen() {
   app.innerHTML = `
-        <div class="screen">
+        <div class="screen titleScreen">
 
-            <h1>OniGoGo!</h1>
+            <h1 class="titleLogo">OniGoGo!</h1>
 
-            <p>
-                海で遭難した人間が漂流したのは、
-                鬼の住む島だった。
-            </p>
+            <img
+              src="images/title_island01.png"
+              alt="海に浮かぶ鬼ヶ島"
+              class="titleIslandImage"
+            >
 
-            <button id="startButton">
+            <p
+              id="titleStoryText"
+              class="titleStoryText"
+            ></p>
+
+            <button id="startButton" class="titleStartButton">
                 スタート
             </button>
 
         </div>
     `;
+
+  // -------------------------
+  // タイトル文章表示演出
+  // -------------------------
+
+  playTitleStory();
 
   // -------------------------
   // スタートボタン
@@ -32,45 +44,130 @@ function renderTitleScreen() {
 }
 
 // =========================
+// タイトル文章表示演出
+// =========================
+
+async function playTitleStory() {
+  const textArea = document.getElementById("titleStoryText");
+
+  if (!textArea) {
+    return;
+  }
+
+  const firstLine = "海で遭難した人間が漂流したのは、";
+
+  const secondLine = "鬼の住む島だった";
+
+  textArea.innerHTML = "";
+
+  for (const char of firstLine) {
+    textArea.textContent += char;
+
+    await wait(90);
+  }
+
+  await wait(500);
+
+  textArea.innerHTML += "<br>";
+
+  for (const char of secondLine) {
+    textArea.innerHTML += char;
+
+    await wait(110);
+  }
+
+  for (let i = 0; i < 3; i++) {
+    await wait(500);
+
+    textArea.innerHTML += "・";
+  }
+}
+
+// =========================
+// 待機処理
+// =========================
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// =========================
 // ルール説明画面
 // =========================
 
 function renderRuleScreen() {
   app.innerHTML = `
-        <div class="screen">
+    <div class="screen ruleScreen">
 
-            <h2>ルール説明</h2>
+      <h2 class="ruleTitle">ルール説明</h2>
 
-            <p>
+      <div class="ruleCard">
+        <div class="ruleCardTitle">🎯 目的</div>
+        <p>
+          <strong>Day10まで、生き残れ。</strong><br>
+          人間はDay10まで鬼から逃げ切れば勝利。<br>
+          鬼は人間を見つければ勝利。<br>
+          ただし、島は満潮で少しずつ沈んでいく。
+        </p>
+      </div>
 
-                ① 人間は10日間逃げ切れば勝利
+      <div class="ruleCard">
+        <div class="ruleCardTitle">行動</div>
 
-            </p>
-
-            <p>
-
-                ② 鬼は人間を見つければ勝利
-
-            </p>
-
-            <p>
-
-                ③ Day3・6・9で島が沈みます
-
-            </p>
-
-            <button id="nextButton">
-
-                次へ
-
-            </button>
-
+        <div class="ruleIconRow">
+          <img src="images/aka-oni01.png" alt="鬼" class="ruleIcon">
+          <span>
+            <strong>鬼</strong>：十字路を1マス移動するか、近隣の建物を1か所探索する。
+          </span>
         </div>
-    `;
 
-  // -------------------------
-  // 次へボタン
-  // -------------------------
+        <div class="ruleIconRow">
+          <img src="images/human01.png" alt="人間" class="ruleIcon">
+          <span>
+            <strong>人間</strong>：隣の建物へ1マス移動する。同じ場所にとどまることはできない。
+          </span>
+        </div>
+      </div>
+
+      <div class="ruleCard">
+        <div class="ruleCardTitle">足跡</div>
+        <p>
+          人間が移動すると、移動前の建物に足跡が残る。<br>
+          鬼には足跡が見えない。ただし、その建物を探索すると発見できる。<br>
+          一度発見した足跡は、その後もずっと見ることができる。
+        </p>
+
+        <div class="ruleIconRow">
+          <img src="images/footprint01.png" alt="通常足跡" class="ruleSmallIcon">
+          <span>通常の足跡</span>
+        </div>
+
+        <div class="ruleIconRow">
+          <img src="images/start_footprint01.png" alt="スタート地点" class="ruleSmallIcon">
+          <span>スタート地点</span>
+        </div>
+      </div>
+
+      <div class="ruleCard">
+        <div class="ruleCardTitle">🌊 満潮</div>
+        <p>
+          Day3・Day6・Day9に満潮が発生。<br>
+          北・東・南・西のどこか1方向が沈み、そこにいた鬼も人間も流される。<br>
+          一度沈んだ方向が、再度沈むことはない。
+        </p>
+      </div>
+
+      <p class="ruleCatch">
+        鬼から逃げるだけでは、生き残れない。<br>
+        沈む島を読み、Day10まで生き延びろ。
+      </p>
+
+      <button id="nextButton" class="ruleStartButton">
+        ゲーム開始
+      </button>
+
+    </div>
+  `;
 
   document.getElementById("nextButton").addEventListener("click", function () {
     renderGameScreen({
@@ -140,7 +237,7 @@ function renderGamePanel(screenData) {
   const panelData = createPanelData(screenData);
 
   gamePanel.innerHTML = `
-    <div class="gamePanel ${panelData.type}">
+    <div class="gamePanel ${gameState.panel.type}">
 
       ${panelData.title ? `<div class="panelTitle">${panelData.title}</div>` : ""}
 
@@ -242,6 +339,10 @@ function renderTurnEndButton() {
 // =========================
 
 function getTideHeaderText() {
+  if (!canShowTideHeader()) {
+    return "";
+  }
+
   const nextTideDay = getNextTideDay();
 
   if (nextTideDay === null) {
@@ -374,6 +475,42 @@ function renderReplayScreen() {
           停止
         </button>
 
+      </div>
+
+      <div class="replaySpeedArea">
+        <span class="replaySpeedLabel">
+          再生速度
+        </span>
+
+        <div class="replaySpeedButtons">
+          <button
+            class="replaySpeedButton"
+            data-speed="500"
+          >
+            0.5秒
+          </button>
+
+          <button
+            class="replaySpeedButton active"
+            data-speed="1000"
+          >
+            1秒
+          </button>
+
+          <button
+            class="replaySpeedButton"
+            data-speed="1500"
+          >
+            1.5秒
+          </button>
+
+          <button
+            class="replaySpeedButton"
+            data-speed="2000"
+          >
+            2秒
+          </button>
+        </div>
       </div>
 
       <button id="replayExitButton">

@@ -78,7 +78,9 @@ function renderHumans() {
 function renderFootprints() {
   for (let row = 0; row < MAP_ROWS; row++) {
     for (let col = 0; col < MAP_COLS; col++) {
-      if (!hasFootprint(row, col)) {
+      const footprints = getVisibleFootprints(row, col);
+
+      if (footprints.length === 0) {
         continue;
       }
 
@@ -90,11 +92,13 @@ function renderFootprints() {
         continue;
       }
 
-      building.innerHTML += `
-        <div class="footprint">
-          ${FOOTPRINT_ICON}
-        </div>
-      `;
+      for (const footprint of footprints) {
+        building.innerHTML += `
+          <div class="footprint">
+            ${getFootprintIcon(footprint)}
+          </div>
+        `;
+      }
     }
   }
 }
@@ -124,11 +128,13 @@ function createMapPieceHtml(pieceType, pieceList) {
       pieceType === "oni" &&
       (piece.data.moved || isPieceSunk(piece.data, "oni"));
 
+    const isFoundHuman = pieceType === "human" && piece.data.found;
+
     return `
       <div
         class="mapPiece ${isSelected ? "selectedPiece" : ""} ${
           isActed ? "actedPiece" : ""
-        }"
+        } ${isFoundHuman ? "foundHumanPiece" : ""}"
         data-type="${pieceType}"
         data-id="${piece.data.id}"
       >
@@ -156,11 +162,13 @@ function createMapPieceHtml(pieceType, pieceList) {
             pieceType === "oni" &&
             (piece.data.moved || isPieceSunk(piece.data, "oni"));
 
+          const isFoundHuman = pieceType === "human" && piece.data.found;
+
           return `
             <div
               class="mapPiece stackedPiece ${
                 isSelected ? "selectedPiece" : ""
-              } ${isActed ? "actedPiece" : ""}"
+              } ${isActed ? "actedPiece" : ""} ${isFoundHuman ? "foundHumanPiece" : ""}"
               data-type="${pieceType}"
               data-id="${piece.data.id}"
             >

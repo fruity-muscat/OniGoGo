@@ -33,7 +33,7 @@ function registerReplayEvents() {
     .getElementById("replayExitButton")
     .addEventListener("click", function () {
       if (confirm("タイトルへ戻りますか？")) {
-        renderTitleScreen();
+        location.reload();
       }
     });
 
@@ -45,6 +45,46 @@ function registerReplayEvents() {
 
       replayJumpToDay(day);
     });
+  }
+
+  const speedButtons = document.querySelectorAll(".replaySpeedButton");
+
+  for (const button of speedButtons) {
+    button.addEventListener("click", onReplaySpeedButtonClick);
+  }
+}
+
+// =========================
+// リプレイ再生速度変更
+// =========================
+
+function onReplaySpeedButtonClick(event) {
+  const speed = Number(event.currentTarget.dataset.speed);
+
+  if (!speed) {
+    return;
+  }
+
+  gameState.replay.speed = speed;
+
+  updateReplaySpeedButtonState();
+
+  if (gameState.replay.playing) {
+    restartReplayAutoTimer();
+  }
+}
+
+// =========================
+// 速度ボタン状態更新
+// =========================
+
+function updateReplaySpeedButtonState() {
+  const buttons = document.querySelectorAll(".replaySpeedButton");
+
+  for (const button of buttons) {
+    const speed = Number(button.dataset.speed);
+
+    button.classList.toggle("active", speed === gameState.replay.speed);
   }
 }
 
@@ -161,7 +201,8 @@ function renderReplayMap(item) {
     }
   }
 
-  replayMapArea.innerHTML = html + createReplayNearMissLine(item);
+  replayMapArea.innerHTML =
+    html + createReplayRouteLines() + createReplayNearMissLine(item);
 }
 
 // =========================
@@ -176,7 +217,11 @@ function createReplayBuildingCell(row, col, buildingIndex, item) {
   const buildingCol = col / 2;
 
   return `
-    <div class="building replayCell ${getReplayTideClass(row, col, item)} ${getReplaySearchClass(buildingRow, buildingCol, item)} ${getReplayRouteClass(buildingRow, buildingCol)} ${getReplayNearMissClass(buildingRow, buildingCol, item)}">
+    <div class="building replayCell
+      ${getReplayTideClass(row, col, item)}
+      ${getReplaySearchClass(buildingRow, buildingCol, item)}
+      ${getReplayNearMissClass(buildingRow, buildingCol, item)}">
+
       ${building.icon}
       ${createReplayHumansHtml(buildingRow, buildingCol, item)}
       ${createReplayFootprintsHtml(buildingRow, buildingCol, item)}
@@ -218,12 +263,18 @@ function createReplayHumansHtml(row, col, item) {
   return item.humans
     .filter(
       (human) =>
-        human.alive &&
+        (human.alive || human.found) &&
         human.position &&
         human.position.row === row &&
         human.position.col === col,
     )
-    .map(() => `<div class="mapPiece">${HUMAN_ICON}</div>`)
+    .map(
+      (human) => `
+    <div class="mapPiece ${human.found ? "foundHumanPiece" : ""}">
+      ${HUMAN_ICON}
+    </div>
+  `,
+    )
     .join("");
 }
 
@@ -271,7 +322,13 @@ function createReplayOniHtml(row, col, item) {
 function createReplayFootprintsHtml(row, col, item) {
   return item.footprints
     .filter((footprint) => footprint.row === row && footprint.col === col)
-    .map(() => `<div class="footprint">${FOOTPRINT_ICON}</div>`)
+    .map(
+      (footprint) => `
+        <div class="footprint">
+          ${footprint.kind === "start" ? START_FOOTPRINT_ICON : FOOTPRINT_ICON}
+        </div>
+      `,
+    )
     .join("");
 }
 
@@ -326,9 +383,15 @@ function getReplaySearchClass(row, col, item) {
 // =========================
 
 function getReplayDayStartIndex(day) {
-  return gameState.replayHistory.findIndex(
+  const dayStartIndex = gameState.replayHistory.findIndex(
     (item) => item.day === day && item.actionType === "dayStart",
   );
+
+  if (dayStartIndex !== -1) {
+    return dayStartIndex;
+  }
+
+  return gameState.replayHistory.findIndex((item) => item.day === day);
 }
 
 // =========================
@@ -415,16 +478,39 @@ function replayStartAuto() {
 
   updateReplayButtonState();
 
+  startReplayAutoTimer();
+}
+
+// =========================
+// 自動再生タイマー開始
+// =========================
+
+function startReplayAutoTimer() {
   gameState.replay.timerId = setInterval(function () {
     if (gameState.replay.index >= gameState.replayHistory.length - 1) {
       replayStopAuto();
+
       return;
     }
 
     gameState.replay.index++;
 
     renderReplay();
-  }, 1000);
+  }, gameState.replay.speed);
+}
+
+// =========================
+// 自動再生タイマー再開始
+// =========================
+
+function restartReplayAutoTimer() {
+  if (gameState.replay.timerId !== null) {
+    clearInterval(gameState.replay.timerId);
+  }
+
+  gameState.replay.timerId = null;
+
+  startReplayAutoTimer();
 }
 
 // =========================
@@ -479,23 +565,27 @@ function updateReplayButtonState() {
 }
 
 // =========================
-// リプレイルート表示クラス
+// リプレイルート線HTML
 // =========================
 
-function getReplayRouteClass(row, col) {
-  const route = getReplayHumanRoute();
+function createReplayRouteLines() {
+  const moves = getReplayHumanMoves();
 
-  return route.some((point) => point.row === row && point.col === col)
-    ? "replayHumanRoute"
-    : "";
+  let html = "";
+
+  for (const move of moves) {
+    html += createReplayRouteLine(move.from, move.to);
+  }
+
+  return html;
 }
 
 // =========================
-// 現在位置までの人間ルート取得
+// 現在位置までの人間移動取得
 // =========================
 
-function getReplayHumanRoute() {
-  const route = [];
+function getReplayHumanMoves() {
+  const moves = [];
 
   for (let i = 0; i <= gameState.replay.index; i++) {
     const item = gameState.replayHistory[i];
@@ -504,17 +594,78 @@ function getReplayHumanRoute() {
       continue;
     }
 
-    if (!item.detail || !item.detail.to) {
+    if (!item.detail || !item.detail.from || !item.detail.to) {
       continue;
     }
 
-    route.push({
-      row: item.detail.to.row,
-      col: item.detail.to.col,
+    moves.push({
+      from: item.detail.from,
+      to: item.detail.to,
     });
   }
 
-  return route;
+  return moves;
+}
+
+// =========================
+// ルート線1本作成
+// =========================
+
+function createReplayRouteLine(from, to) {
+  const fromPosition = getReplayBuildingCenterPosition(from.row, from.col);
+
+  const toPosition = getReplayBuildingCenterPosition(to.row, to.col);
+
+  const rowDiff = to.row - from.row;
+
+  const colDiff = to.col - from.col;
+
+  let direction = "";
+
+  if (rowDiff === -1 && colDiff === 0) {
+    direction = "up";
+  }
+
+  if (rowDiff === 1 && colDiff === 0) {
+    direction = "down";
+  }
+
+  if (rowDiff === 0 && colDiff === -1) {
+    direction = "left";
+  }
+
+  if (rowDiff === 0 && colDiff === 1) {
+    direction = "right";
+  }
+
+  if (direction === "") {
+    return "";
+  }
+
+  let left = fromPosition.x;
+
+  let top = fromPosition.y;
+
+  if (direction === "left") {
+    left = toPosition.x;
+  }
+
+  if (direction === "up") {
+    top = toPosition.y;
+  }
+
+  return `
+    <div
+      class="
+        replayRouteLine
+        replayRouteLine-${direction}
+      "
+      style="
+        left: ${left}%;
+        top: ${top}%;
+      "
+    ></div>
+  `;
 }
 
 // =========================

@@ -88,6 +88,8 @@ function handlePanelAction() {
   if (gameState.panel.nextAction === "confirmTideSink") {
     confirmTideSink();
 
+    gameState.inputLocked = false;
+
     addReplayHistory("tideSink", {
       sunkSides: [...gameState.tide.sunkSides],
     });
@@ -144,6 +146,10 @@ function handlePanelAction() {
   }
 
   if (gameState.panel.nextAction === "closePanel") {
+    if (gameState.panel.type === "progress") {
+      gameState.tide.noticeShown = true;
+    }
+
     resetGamePanel();
 
     renderGameScreen({
@@ -227,6 +233,8 @@ function showOniActionPanel(oniId) {
   }
 
   gameState.turn.selectedOniId = oniId;
+
+  gameState.turn.actionMode = "oniReady";
 
   refreshGameView();
 
@@ -444,6 +452,8 @@ function showTideSinkPanel() {
     return;
   }
 
+  gameState.inputLocked = true;
+
   setGamePanel({
     type: "progress",
 
@@ -475,7 +485,7 @@ function showGameResultPanel(result) {
   });
 
   setGamePanel({
-    type: "result",
+    type: "result-" + result.type,
 
     title: result.title,
 

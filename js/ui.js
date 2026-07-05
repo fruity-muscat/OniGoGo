@@ -17,6 +17,8 @@ let gameState = {
 
   result: null,
 
+  inputLocked: false,
+
   placement: {
     pieceType: "oni",
 
@@ -104,6 +106,8 @@ let gameState = {
     nextSinkSide: null,
 
     previewSide: null,
+
+    noticeShown: false,
   },
 
   humans: [],
@@ -120,6 +124,8 @@ let gameState = {
     playing: false,
 
     timerId: null,
+
+    speed: 1000,
   },
 };
 

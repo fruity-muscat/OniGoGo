@@ -1022,3 +1022,688 @@ button {
 
   border-left: dashed 3px rgba(255, 193, 7, 0.95);
 }
+
+/* ==========================
+   発見された人間
+========================== */
+
+.foundHumanPiece {
+  color: #d50000;
+
+  text-shadow:
+    0 0 4px #ffffff,
+    0 0 8px #ff5252,
+    0 0 12px #d50000;
+
+  animation: foundHumanPulse 0.8s infinite;
+}
+
+@keyframes foundHumanPulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.25);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ==========================
+   建物内レイヤー調整
+========================== */
+
+.building {
+  position: relative;
+
+  overflow: hidden;
+}
+
+/* 建物アイコンを少し奥に置く */
+
+.building > span,
+.buildingIcon {
+  z-index: 1;
+}
+
+/* 建物上の人間コマ */
+
+.building .mapPiece {
+  position: absolute;
+
+  left: 50%;
+
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 5;
+
+  width: 28px;
+
+  height: 28px;
+
+  border: solid 2px #ff80ab;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.9);
+
+  font-size: 18px;
+
+  line-height: 1;
+}
+
+/* 建物上の足跡 */
+
+.building .footprint {
+  position: absolute;
+
+  right: 2px;
+
+  bottom: 2px;
+
+  z-index: 6;
+
+  width: 22px;
+
+  height: 22px;
+
+  border: solid 2px #ffb74d;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.9);
+
+  font-size: 13px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  margin: 0;
+}
+
+/* 発見された人間は重ね表示でも赤点滅を優先 */
+
+.building .foundHumanPiece {
+  border-color: #d50000;
+
+  background: rgba(255, 235, 238, 0.95);
+}
+
+/* ==========================
+   勝敗パネル色
+========================== */
+
+.gamePanel.result-oniWin .panelTitle,
+.gamePanel.result-oniWin .panelMessages {
+  color: #d50000;
+
+  font-weight: bold;
+}
+
+.gamePanel.result-humanWin .panelTitle,
+.gamePanel.result-humanWin .panelMessages {
+  color: #1565c0;
+
+  font-weight: bold;
+}
+
+.gamePanel.result-draw .panelTitle,
+.gamePanel.result-draw .panelMessages {
+  color: #6a1b9a;
+
+  font-weight: bold;
+}
+
+/* ==========================
+   リプレイ再生速度
+========================== */
+
+.replaySpeedArea {
+  margin-top: 10px;
+
+  text-align: center;
+}
+
+.replaySpeedLabel {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-weight: bold;
+}
+
+.replaySpeedButtons {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 5px;
+}
+
+.replaySpeedButton {
+  padding: 7px 9px;
+
+  border: solid 1px #999;
+
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  font-size: 13px;
+}
+
+.replaySpeedButton.active {
+  border: solid 2px #1976d2;
+
+  background: #e3f2fd;
+
+  font-weight: bold;
+}
+
+/* ==========================
+   リプレイ人間ルート
+========================== */
+
+.replayRouteLine {
+  position: absolute;
+
+  z-index: 20;
+
+  pointer-events: none;
+}
+
+.replayRouteLine-right,
+.replayRouteLine-left {
+  width: calc(200% / 11);
+
+  height: 0;
+
+  border-top: dashed 4px #e91e63;
+}
+
+.replayRouteLine-up,
+.replayRouteLine-down {
+  width: 0;
+
+  height: calc(200% / 11);
+
+  border-left: dashed 4px #e91e63;
+}
+
+/* ==========================
+   Phase9-2-1
+   ゲーム画面 色彩デザイン
+========================== */
+
+/* 海背景 */
+body {
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(255, 255, 255, 0.75) 0 2px,
+      transparent 3px
+    ),
+    radial-gradient(
+      circle at 80% 30%,
+      rgba(255, 255, 255, 0.55) 0 2px,
+      transparent 3px
+    ),
+    linear-gradient(180deg, #b9ecff 0%, #7fd3f7 100%);
+}
+
+/* アプリ全体を海になじませる */
+#app {
+  background: transparent;
+}
+
+/* 上部パネル */
+.gameHeader,
+.replayHeader {
+  background: rgba(255, 255, 255, 0.92);
+
+  border: solid 2px #3f5f68;
+
+  box-shadow: 0 3px 8px rgba(0, 80, 120, 0.18);
+}
+
+/* マップ全体：島 */
+#mapArea,
+#replayMapArea {
+  background: #bfe8a8;
+
+  border: solid 2px #3f5f3f;
+
+  box-shadow:
+    0 0 0 4px rgba(255, 255, 255, 0.45),
+    0 6px 14px rgba(0, 80, 80, 0.22);
+
+  overflow: hidden;
+}
+
+/* 建物マス：少し明るい草地 */
+.building {
+  background: #d9e8b8;
+
+  border-radius: 5px;
+}
+
+/* 道マス：島の地面 */
+.road {
+  background: #a8d79b;
+}
+
+/* 十字路：黒丸から草色の丸へ */
+.crossroad {
+  background: #6fa866;
+
+  border: solid 1px rgba(55, 110, 55, 0.75);
+
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.35);
+}
+
+/* 下部パネル */
+#gamePanel {
+  background: rgba(255, 255, 255, 0.94);
+
+  border: solid 2px #3f5f68;
+
+  box-shadow: 0 3px 8px rgba(0, 80, 120, 0.18);
+}
+
+/* ボタンを少しやわらかく */
+button,
+.panelMenuButton,
+.turnEndButton,
+#actionButton {
+  background: #ffffff;
+
+  border: solid 2px #4f6f78;
+
+  border-radius: 8px;
+}
+
+/* ボタン押下時 */
+button:active,
+.panelMenuButton:active,
+.turnEndButton:active,
+#actionButton:active {
+  transform: scale(0.97);
+}
+
+/* 満潮プレビュー：海らしい青 */
+.sinkPreview {
+  background: rgba(33, 150, 243, 0.5) !important;
+
+  box-shadow:
+    inset 0 0 10px rgba(33, 150, 243, 0.9),
+    0 0 10px rgba(255, 255, 255, 0.6);
+}
+
+/* 沈没済みマス */
+.sunkCell {
+  background: rgba(33, 150, 243, 0.48) !important;
+
+  box-shadow: inset 0 0 8px rgba(21, 101, 192, 0.75);
+}
+
+/* ==========================
+   Phase9-2-1 修正
+   行動候補・探索表示を優先
+========================== */
+
+/* 配置可能・移動可能マス */
+.placementTarget,
+.dragTarget {
+  background: rgba(76, 175, 80, 0.7) !important;
+
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.85),
+    0 0 16px rgba(76, 175, 80, 0.95) !important;
+
+  animation: selectablePulse 1s infinite;
+
+  cursor: pointer;
+}
+
+/* 探索可能マス */
+.searchTarget,
+.replaySearchTarget {
+  background: rgba(244, 67, 54, 0.72) !important;
+
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.85),
+    0 0 16px rgba(244, 67, 54, 0.95) !important;
+
+  animation: selectablePulse 1s infinite;
+
+  cursor: pointer;
+}
+
+/* リプレイのニアミス表示は探索赤より優先 */
+.replayNearMiss {
+  background: rgba(255, 235, 59, 0.8) !important;
+
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.85),
+    0 0 16px rgba(255, 193, 7, 0.95) !important;
+}
+
+/* ==========================
+   鬼アイコン
+========================== */
+
+.oniIcon {
+  width: 30px;
+
+  height: 30px;
+
+  object-fit: contain;
+
+  display: block;
+
+  pointer-events: none;
+}
+
+/* ==========================
+   人間アイコン
+========================== */
+
+.humanIcon {
+  width: 30px;
+
+  height: 30px;
+
+  object-fit: contain;
+
+  display: block;
+
+  pointer-events: none;
+}
+
+/* ==========================
+   通常足跡アイコン
+========================== */
+
+.footprintIcon {
+  width: 18px;
+
+  height: 18px;
+
+  object-fit: contain;
+
+  display: block;
+
+  pointer-events: none;
+}
+
+/* ==========================
+   スタート地点足跡アイコン
+========================== */
+
+.startFootprintIcon {
+  width: 18px;
+
+  height: 18px;
+
+  object-fit: contain;
+
+  display: block;
+
+  pointer-events: none;
+}
+
+/* ==========================
+   建物アイコン
+========================== */
+
+.buildingIcon {
+  width: 30px;
+
+  height: 30px;
+
+  object-fit: contain;
+
+  display: block;
+
+  pointer-events: none;
+}
+
+/* ==========================
+   Phase9-2-3
+   タイトル画面
+========================== */
+
+.titleScreen {
+  min-height: 100vh;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 18px;
+
+  position: relative;
+
+  overflow: hidden;
+
+  background: linear-gradient(180deg, #127fa6 0%, #0d709b 45%, #075d88 100%);
+}
+
+/* --------------------------
+   タイトル
+-------------------------- */
+
+.titleLogo {
+  margin-bottom: 0;
+
+  font-size: 56px;
+
+  color: #ffd66b;
+
+  text-shadow:
+    3px 3px 0 #06344d,
+    0 0 12px rgba(0, 0, 0, 0.5);
+
+  position: relative;
+
+  z-index: 1;
+}
+
+/* --------------------------
+   鬼ヶ島画像
+-------------------------- */
+
+.titleIslandImage {
+  width: 86%;
+
+  max-width: 380px;
+
+  border-radius: 0;
+
+  box-shadow: none;
+
+  position: relative;
+
+  z-index: 1;
+
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    black 58%,
+    rgba(0, 0, 0, 0.85) 72%,
+    transparent 100%
+  );
+
+  mask-image: radial-gradient(
+    ellipse at center,
+    black 58%,
+    rgba(0, 0, 0, 0.85) 72%,
+    transparent 100%
+  );
+}
+
+/* --------------------------
+   ストーリー文章
+-------------------------- */
+
+.titleStoryText {
+  margin: 0;
+
+  font-size: 22px;
+
+  font-weight: bold;
+
+  line-height: 1.7;
+
+  color: #ffffff;
+
+  text-shadow:
+    2px 2px 0 #06344d,
+    0 0 8px rgba(0, 0, 0, 0.45);
+
+  position: relative;
+
+  z-index: 1;
+}
+
+/* --------------------------
+   スタートボタン
+-------------------------- */
+
+.titleStartButton {
+  margin-top: 4px;
+
+  min-width: 150px;
+
+  position: relative;
+
+  z-index: 1;
+}
+
+/* ==========================
+   Phase9-2-4
+   ルール説明画面
+========================== */
+
+.ruleScreen {
+  min-height: 100vh;
+
+  padding: 16px;
+
+  background: linear-gradient(180deg, #127fa6 0%, #0d709b 45%, #075d88 100%);
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.ruleTitle {
+  color: #ffd66b;
+
+  font-size: 28px;
+
+  text-shadow:
+    2px 2px 0 #06344d,
+    0 0 10px rgba(0, 0, 0, 0.45);
+}
+
+.ruleCard {
+  padding: 8px 10px;
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.92);
+
+  text-align: left;
+
+  font-size: 13px;
+
+  font-weight: normal;
+
+  line-height: 1.45;
+}
+
+.ruleCard p {
+  margin: 0;
+}
+
+.ruleCardTitle {
+  margin-bottom: 4px;
+
+  font-size: 15px;
+
+  font-weight: bold;
+
+  color: #06344d;
+}
+
+.ruleIconRow {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 4px;
+}
+
+.ruleIcon {
+  width: 26px;
+
+  height: 26px;
+
+  object-fit: contain;
+
+  flex-shrink: 0;
+}
+
+.ruleSmallIcon {
+  width: 20px;
+
+  height: 20px;
+
+  object-fit: contain;
+
+  flex-shrink: 0;
+}
+
+.ruleCatch {
+  margin: 4px 0 0;
+
+  font-size: 15px;
+
+  font-weight: bold;
+
+  line-height: 1.45;
+
+  color: #ffffff;
+
+  text-shadow:
+    2px 2px 0 #06344d,
+    0 0 8px rgba(0, 0, 0, 0.45);
+}
+
+.ruleStartButton {
+  margin: 4px auto 0;
+
+  width: auto;
+
+  min-width: 150px;
+
+  padding-left: 32px;
+
+  padding-right: 32px;
+}

@@ -46,6 +46,10 @@ function createHumans() {
       escaped: false,
 
       moved: false,
+
+      found: false,
+
+      hasMovedOnce: false,
     });
   }
 
@@ -294,6 +298,7 @@ function getSearchResult(row, col) {
 
   if (humans.length > 0) {
     for (const human of humans) {
+      human.found = true;
       human.alive = false;
     }
 
@@ -301,6 +306,7 @@ function getSearchResult(row, col) {
       type: "foundHuman",
       title: "鬼の勝利！",
       messages: ["勝因：鬼が人間を発見しました。"],
+      foundHumanIds: humans.map((human) => human.id),
     };
   }
 
@@ -409,17 +415,40 @@ function isMovableBuilding(row, col) {
 // 足跡追加
 // =========================
 
-function addFootprint(row, col) {
+function addFootprint(row, col, options) {
+  const data = options || {};
+
   gameState.history.push({
     type: "footprint",
-
     row,
     col,
-
     day: gameState.day,
-
     found: false,
+    kind: data.kind || "normal",
+    humanId: data.humanId ?? null,
   });
+}
+
+function getVisibleFootprints(row, col) {
+  return gameState.history.filter((item) => {
+    if (item.type !== "footprint" || item.row !== row || item.col !== col) {
+      return false;
+    }
+
+    if (gameState.phase === "humanTurn") {
+      return true;
+    }
+
+    return item.found;
+  });
+}
+
+function getFootprintIcon(footprint) {
+  if (footprint.kind === "start") {
+    return START_FOOTPRINT_ICON;
+  }
+
+  return FOOTPRINT_ICON;
 }
 
 // =========================
@@ -484,6 +513,14 @@ function getNextTideDay() {
   }
 
   return schedule.sinkDay;
+}
+
+// =========================
+// 満潮表示可能判定
+// =========================
+
+function canShowTideHeader() {
+  return gameState.tide.noticeShown;
 }
 
 // =========================
@@ -875,6 +912,10 @@ function cloneReplayPieces(pieces) {
     moved: piece.moved,
 
     escaped: piece.escaped || false,
+
+    found: piece.found || false,
+
+    hasMovedOnce: piece.hasMovedOnce || false,
   }));
 }
 
@@ -893,5 +934,9 @@ function cloneReplayFootprints() {
       day: item.day,
 
       found: item.found,
+
+      kind: item.kind || "normal",
+
+      humanId: item.humanId ?? null,
     }));
 }

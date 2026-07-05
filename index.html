@@ -34,6 +34,22 @@
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
+          const isLocal =
+            location.hostname === "127.0.0.1" ||
+            location.hostname === "localhost";
+
+          if (isLocal) {
+            navigator.serviceWorker
+              .getRegistrations()
+              .then(function (registrations) {
+                for (const registration of registrations) {
+                  registration.unregister();
+                }
+              });
+
+            return;
+          }
+
           navigator.serviceWorker.register("./sw.js");
         });
       }

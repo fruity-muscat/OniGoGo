@@ -77,7 +77,8 @@ function renderBuilding(row, col, buildingIndex) {
 
   const isSearchTarget =
     gameState.phase === "oniTurn" &&
-    gameState.turn.actionMode === "search" &&
+    (gameState.turn.actionMode === "search" ||
+      gameState.turn.actionMode === "oniReady") &&
     isSearchableBuilding(buildingRow, buildingCol);
 
   const isHumanMoveTarget =
@@ -115,7 +116,8 @@ function renderCrossroad(row, col) {
 
   const isMoveTarget =
     gameState.phase === "oniTurn" &&
-    gameState.turn.actionMode === "move" &&
+    (gameState.turn.actionMode === "move" ||
+      gameState.turn.actionMode === "oniReady") &&
     isMovableCrossroad(crossroadRow, crossroadCol);
 
   return `
