@@ -124,7 +124,7 @@ function renderRuleScreen() {
         <div class="ruleIconRow">
           <img src="images/human01.png" alt="人間" class="ruleIcon">
           <span>
-            <strong>人間</strong>：隣の建物へ1マス移動する。同じ場所にとどまることはできない。
+            <strong>人間</strong>：隣の建物へ1マス移動する。同じ場所にとどまることはできない。1度移動した建物へは移動できない。
           </span>
         </div>
       </div>
@@ -419,22 +419,95 @@ function renderGameOverScreen(result) {
 // =========================
 
 function getEndingData(result, resultData) {
+  const reason = resultData.reason;
+
   if (result.type === "foundHuman") {
     return {
       title: "鬼ヶ島の大宴会",
-
       image: "images/ending_oni_found01.png",
-
       alt: "鬼ヶ島の大宴会",
-
       story: [
         "捕まった――そう思った。",
         "しかし、連れていかれた先で待っていたのは、",
         "ごちそうと鬼饅頭、そしてたくさんの笑顔だった。",
-        "鬼たちはただ、人間を危険な場所から連れ戻したかったのだ。",
+        "鬼たちはただ、人間を沈む島から助けたかったのだ。",
       ],
-
       closing: "こうして鬼ヶ島史上、初めての大宴会が始まった。",
+    };
+  }
+
+  if (result.type === "oniWin" && reason === "人間は逃げ場を失いました。") {
+    return {
+      title: "鬼ヶ島のおみやげ",
+      image: "images/ending_oni_blocked01.png",
+      alt: "鬼ヶ島のおみやげ",
+      story: [
+        "逃げ場を失い、海賊たちは覚悟を決めた。",
+        "しかし、鬼が差し出したのは武器ではなく鬼饅頭だった。",
+        "鬼たちは帰りの船まで貸してくれた。",
+        "ずっと追っていたのは、沈む島から助けるためだったのだ。",
+      ],
+      closing: "鬼たちに見送られ、海賊たちは鬼ヶ島をあとにした。",
+    };
+  }
+
+  if (result.type === "oniWin" && reason === "人間は全員流されました。") {
+    return {
+      title: "鬼の救助隊",
+      image: "images/ending_oni_rescue01.png",
+      alt: "鬼の救助隊",
+      story: [
+        "海へ流され、すべてが終わった――そう思った。",
+        "そのとき海へ飛び込んだのは、追ってきた鬼たちだった。",
+        "海賊たちは救い出され、温かい食事と鬼饅頭をもらった。",
+        "鬼たちはずっと、沈む島から人間を守ろうとしていたのだ。",
+      ],
+      closing: "追跡者だと思っていた鬼たちは、命の恩人になった。",
+    };
+  }
+
+  if (result.type === "humanWin" && reason === "Day10を生き延びました。") {
+    return {
+      title: "鬼の子どもたち",
+      image: "images/ending_human_day10_01.png",
+      alt: "鬼の子どもたち",
+      story: [
+        "10日間逃げ続けた海賊たちは、鬼の集落を見つけた。",
+        "そこで出会ったのは、鬼饅頭を分けてくれる子どもたちだった。",
+        "鬼たちは人間を捕まえたかったのではない。",
+        "沈む島の危険から、守ろうと追いかけていたのだ。",
+      ],
+      closing: "こうして海賊たちは、鬼ヶ島に新しい友達を見つけた。",
+    };
+  }
+
+  if (result.type === "humanWin" && reason === "鬼は全員流されました。") {
+    return {
+      title: "人間の救助隊",
+      image: "images/ending_human_rescue01.png",
+      alt: "人間の救助隊",
+      story: [
+        "流された鬼たちを見て、鬼の子どもたちが助けを求めた。",
+        "海賊たちは集落の船を借り、迷わず鬼たちを救い出した。",
+        "鬼たちは、沈む島の危険から守ろうと追いかけていたのだと。",
+        "理由を知った今、もう敵ではなかった。",
+      ],
+      closing: "鬼を救った海賊たちは、鬼ヶ島の英雄になった。",
+    };
+  }
+
+  if (result.type === "draw") {
+    return {
+      title: "みんな、生きていた！",
+      image: "images/ending_draw01.png",
+      alt: "みんな、生きていた！",
+      story: [
+        "鬼も海賊も、満潮の海へ流されてしまった。",
+        "しかし海の中では、もう敵も味方もなかった。",
+        "泳ぎの得意な者たちが、互いの仲間を助け合った。",
+        "やがて全員が、無事に鬼ヶ島へたどり着いた。",
+      ],
+      closing: "海岸には、笑顔と鬼饅頭があふれていた。",
     };
   }
 

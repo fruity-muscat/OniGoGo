@@ -1791,3 +1791,275 @@ button:active,
 
   padding-right: 32px;
 }
+
+/* ==========================
+   ver1.0直前調整
+   選択候補・コマ視認性・発見演出
+========================== */
+
+/* ② 鬼アイコン：紫系で強調 */
+.crossroad .mapPiece {
+  width: 34px;
+
+  height: 34px;
+
+  border: solid 3px #7b1fa2;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.92);
+
+  box-shadow:
+    0 0 0 2px rgba(225, 190, 231, 0.9),
+    0 0 10px rgba(123, 31, 162, 0.95);
+
+  position: relative;
+
+  z-index: 10;
+}
+
+.crossroad .oniIcon {
+  width: 30px;
+
+  height: 30px;
+
+  filter: drop-shadow(0 0 4px #ffffff) drop-shadow(0 0 6px #7b1fa2);
+}
+
+/* ② 人間アイコン：赤系で強調 */
+.building .mapPiece {
+  width: 34px;
+
+  height: 34px;
+
+  border: solid 3px #e53935;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  box-shadow:
+    0 0 0 2px rgba(255, 205, 210, 0.9),
+    0 0 10px rgba(229, 57, 53, 0.95);
+
+  z-index: 12;
+}
+
+.building .humanIcon {
+  width: 30px;
+
+  height: 30px;
+
+  filter: drop-shadow(0 0 4px #ffffff) drop-shadow(0 0 6px #e53935);
+}
+
+/* ② 足跡も背景から浮かせる */
+.building .footprint {
+  z-index: 9;
+
+  border: solid 2px #fb8c00;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  box-shadow:
+    0 0 0 2px rgba(255, 224, 178, 0.95),
+    0 0 8px rgba(251, 140, 0, 0.9);
+}
+
+.footprintIcon,
+.startFootprintIcon {
+  filter: drop-shadow(0 0 3px #ffffff) drop-shadow(0 0 4px #fb8c00);
+}
+
+/* ③ 探索で人間発見した鬼勝利パネルも赤太字にする */
+.gamePanel.result-foundHuman .panelTitle,
+.gamePanel.result-foundHuman .panelMessages {
+  color: #d50000;
+
+  font-weight: bold;
+}
+
+/* ④ 発見された人間を足跡より前面に出す */
+.building .foundHumanPiece {
+  z-index: 30;
+
+  border-color: #d50000;
+
+  background: rgba(255, 235, 238, 0.98);
+
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.95),
+    0 0 14px rgba(213, 0, 0, 1);
+}
+
+/* ④ 既存の中央配置translateを保ったまま赤点滅 */
+@keyframes foundHumanPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.25);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* ==========================
+   ver1.0直前調整
+   ① 配置・移動可能場所の改善
+========================== */
+
+/* マス自体は拡大させない */
+.placementTarget,
+.dragTarget {
+  animation: none !important;
+
+  transform: none !important;
+
+  position: relative;
+}
+
+/* 人間の配置・移動可能な建物 */
+.building.placementTarget::after,
+.building.dragTarget::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 8;
+
+  pointer-events: none;
+
+  border: solid 3px #00c853;
+
+  border-radius: 5px;
+
+  background: rgba(0, 200, 83, 0.38);
+
+  box-shadow:
+    inset 0 0 10px rgba(0, 200, 83, 0.9),
+    0 0 10px rgba(0, 200, 83, 0.95);
+
+  animation: humanTargetPulse 1s infinite;
+}
+
+/* 建物アイコンは緑レイヤーより奥 */
+.building.placementTarget .buildingIcon,
+.building.dragTarget .buildingIcon {
+  position: relative;
+
+  z-index: 1;
+}
+
+/* 人間・足跡は緑レイヤーより前 */
+.building.placementTarget .mapPiece,
+.building.dragTarget .mapPiece,
+.building.placementTarget .footprint,
+.building.dragTarget .footprint {
+  z-index: 12;
+}
+
+@keyframes humanTargetPulse {
+  0% {
+    opacity: 0.45;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.45;
+  }
+}
+
+/* ==========================
+   ver1.0直前調整
+   鬼重なり時のマス膨張防止
+========================== */
+
+/* 十字路の候補表示ではマス自体を拡大しない */
+.crossroad.placementTarget,
+.crossroad.dragTarget,
+.crossroad.searchTarget {
+  animation: none !important;
+
+  transform: none !important;
+}
+
+/* 重なった鬼アイコンの箱が十字路を押し広げないようにする */
+.crossroad .stackedPieces {
+  width: 34px;
+
+  height: 34px;
+
+  position: relative;
+
+  flex-shrink: 0;
+
+  overflow: visible;
+}
+
+/* 重なった鬼も中央基準で収める */
+.crossroad .stackedPiece {
+  position: absolute;
+
+  left: 50%;
+
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: 34px;
+
+  height: 34px;
+}
+
+/* 既存の nth-child の top 指定を無効化 */
+.crossroad .stackedPiece:nth-child(1),
+.crossroad .stackedPiece:nth-child(2),
+.crossroad .stackedPiece:nth-child(3),
+.crossroad .stackedPiece:nth-child(4) {
+  top: 50%;
+}
+
+/* 重なり数表示 */
+.crossroad .stackedPieces .pieceCount {
+  right: -10px;
+
+  bottom: -6px;
+
+  z-index: 20;
+}
+
+/* ==========================
+   ver1.0直前調整
+   重なった鬼の選択改善
+========================== */
+
+/* 行動済み鬼はクリック対象から外す */
+.crossroad .stackedPiece.actedPiece {
+  pointer-events: none;
+}
+
+/* 重なった鬼を少しずらして見えるようにする */
+.crossroad .stackedPiece:nth-child(1) {
+  transform: translate(-62%, -50%);
+}
+
+.crossroad .stackedPiece:nth-child(2) {
+  transform: translate(-38%, -50%);
+}
+
+.crossroad .stackedPiece:nth-child(3) {
+  transform: translate(-50%, -30%);
+}
+
+.crossroad .stackedPiece:nth-child(4) {
+  transform: translate(-50%, -70%);
+}
