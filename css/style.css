@@ -2063,3 +2063,207 @@ button:active,
 .crossroad .stackedPiece:nth-child(4) {
   transform: translate(-50%, -70%);
 }
+
+/* ==========================
+   ver1.0直前調整
+   十字路の円固定
+========================== */
+
+/* 十字路セル自体は透明な箱にする */
+.crossroad {
+  position: relative;
+
+  background: transparent !important;
+
+  border: none !important;
+
+  box-shadow: none !important;
+
+  border-radius: 0 !important;
+
+  overflow: visible;
+}
+
+/* 十字路の丸だけを中央に描く */
+.crossroad::before {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+
+  top: 50%;
+
+  width: 78%;
+
+  aspect-ratio: 1 / 1;
+
+  transform: translate(-50%, -50%);
+
+  border-radius: 50%;
+
+  background: #6fa866;
+
+  border: solid 1px rgba(55, 110, 55, 0.75);
+
+  box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.35);
+
+  z-index: 1;
+}
+
+/* 鬼は十字路の円より前面に出す */
+.crossroad .mapPiece,
+.crossroad .stackedPieces {
+  position: relative;
+
+  z-index: 5;
+}
+
+/* ==========================
+   ver1.0直前調整
+   人間受け渡し警告パネル
+========================== */
+
+.gamePanel.pass.warningPass {
+  background: linear-gradient(180deg, #b71c1c 0%, #d32f2f 100%);
+
+  color: #ffffff;
+
+  border: solid 4px #ffeb3b;
+
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.25),
+    0 0 18px rgba(244, 67, 54, 0.95);
+
+  animation: warningPassPulse 1s infinite;
+}
+
+.gamePanel.pass.warningPass .panelTitle {
+  font-size: 26px;
+
+  color: #ffffff;
+
+  text-shadow:
+    2px 2px 0 #7f0000,
+    0 0 8px rgba(255, 255, 255, 0.75);
+}
+
+.gamePanel.pass.warningPass .panelMessages {
+  font-size: 18px;
+
+  color: #ffffff;
+
+  line-height: 1.4;
+
+  text-shadow: 1px 1px 0 #7f0000;
+}
+
+.gamePanel.pass.warningPass #actionButton {
+  margin-top: 10px;
+
+  background: #ffffff;
+
+  color: #b71c1c;
+
+  border: solid 3px #ffeb3b;
+
+  font-weight: bold;
+
+  min-width: 220px;
+}
+
+@keyframes warningPassPulse {
+  0% {
+    box-shadow:
+      inset 0 0 0 3px rgba(255, 255, 255, 0.25),
+      0 0 10px rgba(244, 67, 54, 0.7);
+  }
+
+  50% {
+    box-shadow:
+      inset 0 0 0 3px rgba(255, 255, 255, 0.35),
+      0 0 22px rgba(255, 235, 59, 0.95);
+  }
+
+  100% {
+    box-shadow:
+      inset 0 0 0 3px rgba(255, 255, 255, 0.25),
+      0 0 10px rgba(244, 67, 54, 0.7);
+  }
+}
+
+/* ==========================
+   ver1.0直前調整
+   十字路ターゲット表示復旧
+========================== */
+
+/* 鬼配置・鬼移動可能十字路 */
+.crossroad.placementTarget::before,
+.crossroad.dragTarget::before {
+  background: #7ee081;
+
+  border: solid 3px #00c853;
+
+  box-shadow:
+    inset 0 0 8px rgba(255, 255, 255, 0.8),
+    0 0 14px rgba(0, 200, 83, 1);
+
+  animation: crossroadTargetPulse 1s infinite;
+}
+
+/* 鬼探索可能建物 */
+.crossroad.searchTarget::before {
+  background: #ef5350;
+
+  border: solid 3px #d50000;
+
+  box-shadow:
+    inset 0 0 8px rgba(255, 255, 255, 0.8),
+    0 0 14px rgba(213, 0, 0, 1);
+
+  animation: crossroadTargetPulse 1s infinite;
+}
+
+@keyframes crossroadTargetPulse {
+  0% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.55;
+  }
+}
+
+/* ==========================
+   ver1.0直前調整
+   スマホの引っ張り更新対策
+========================== */
+
+html,
+body {
+  overscroll-behavior: none;
+
+  touch-action: manipulation;
+}
+
+body {
+  overflow: hidden;
+}
+
+#app {
+  overscroll-behavior: none;
+
+  overflow: hidden;
+}
+
+.screen {
+  min-height: 100vh;
+
+  max-height: 100vh;
+
+  overflow: hidden;
+}
