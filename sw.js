@@ -1,6 +1,6 @@
 "use strict";
 
-const CACHE_NAME = "onigogo-cache-v1";
+const CACHE_NAME = "onigogo-cache-v2";
 
 const CACHE_FILES = [
   "./",
