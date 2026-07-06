@@ -297,7 +297,7 @@ function renderPanelMenuButtons(panelData) {
 // =========================
 
 function renderTurnEndButton() {
-  if (gameState.panel.type === "pass") {
+  if (gameState.panel.type.includes("pass")) {
     return "";
   }
 

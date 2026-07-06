@@ -195,13 +195,17 @@ function handlePanelAction() {
 
 function showPassToHumanSetupPanel() {
   setGamePanel({
-    type: "pass",
+    type: "pass warningPass",
 
-    title: "👹 → 👤",
+    title: "⚠️ 鬼は見ないで！",
 
-    messages: ["端末を人間へ渡してください", "鬼は画面を見ないでください"],
+    messages: [
+      "ここから人間配置です",
+      "端末を人間へ渡してください",
+      "鬼は画面を見ないでください",
+    ],
 
-    buttonText: "OK",
+    buttonText: "人間が受け取りました",
 
     nextAction: "showHumanSetup",
   });
@@ -213,10 +217,18 @@ function showPassToHumanSetupPanel() {
 
 function showPassToHumanPanel() {
   setGamePanel({
-    type: "pass",
-    title: "👹 → 👤",
-    messages: ["端末を人間へ渡してください", "鬼は画面を見ないでください"],
-    buttonText: "OK",
+    type: "pass warningPass",
+
+    title: "⚠️ 鬼は見ないで！",
+
+    messages: [
+      "ここから人間ターンです",
+      "端末を人間へ渡してください",
+      "鬼は画面を見ないでください",
+    ],
+
+    buttonText: "人間が受け取りました",
+
     nextAction: "showHumanTurn",
   });
 }
