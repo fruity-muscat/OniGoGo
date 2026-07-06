@@ -359,8 +359,10 @@ function getTideHeaderText() {
 function renderGameOverScreen(result) {
   const resultData = createResultData(result);
 
+  const endingData = getEndingData(result, resultData);
+
   app.innerHTML = `
-    <div class="screen">
+    <div class="screen gameOverPage">
 
       <div class="gameOverScreen">
 
@@ -369,21 +371,16 @@ function renderGameOverScreen(result) {
         </h2>
 
         <div class="gameOverMessages">
-          <p>
-            勝因：${resultData.reason}
-          </p>
+          勝因：${resultData.reason}
         </div>
 
-        <div class="resultInfo">
+        ${renderEndingContent(endingData)}
+
+        <div class="resultInfo resultInfoCompact">
 
           <div class="resultInfoRow">
             <span>終了Day</span>
             <strong>Day${resultData.endDay}</strong>
-          </div>
-
-          <div class="resultInfoRow">
-            <span>満潮発生回数</span>
-            <strong>${resultData.tideCount}回</strong>
           </div>
 
           <div class="resultInfoRow">
@@ -403,7 +400,7 @@ function renderGameOverScreen(result) {
 
         </div>
 
-        <button id="toReplayButton">
+        <button id="toReplayButton" class="toReplayButton">
           リプレイへ進む
         </button>
 
@@ -415,6 +412,67 @@ function renderGameOverScreen(result) {
   document
     .getElementById("toReplayButton")
     .addEventListener("click", renderReplayScreen);
+}
+
+// =========================
+// エンディングデータ取得
+// =========================
+
+function getEndingData(result, resultData) {
+  if (result.type === "foundHuman") {
+    return {
+      title: "鬼ヶ島の大宴会",
+
+      image: "images/ending_oni_found01.png",
+
+      alt: "鬼ヶ島の大宴会",
+
+      story: [
+        "捕まった――そう思った。",
+        "しかし、連れていかれた先で待っていたのは、",
+        "ごちそうと鬼饅頭、そしてたくさんの笑顔だった。",
+        "鬼たちはただ、人間を危険な場所から連れ戻したかったのだ。",
+      ],
+
+      closing: "こうして鬼ヶ島史上、初めての大宴会が始まった。",
+    };
+  }
+
+  return null;
+}
+
+// =========================
+// エンディングHTML作成
+// =========================
+
+function renderEndingContent(endingData) {
+  if (!endingData) {
+    return "";
+  }
+
+  return `
+    <div class="endingArea">
+
+      <div class="endingTitle">
+        ${endingData.title}
+      </div>
+
+      <img
+        src="${endingData.image}"
+        alt="${endingData.alt}"
+        class="endingImage"
+      >
+
+      <div class="endingStory">
+        ${endingData.story.map((line) => `<div>${line}</div>`).join("")}
+      </div>
+
+      <div class="endingClosing">
+        ${endingData.closing}
+      </div>
+
+    </div>
+  `;
 }
 
 // =========================
