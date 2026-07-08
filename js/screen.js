@@ -21,9 +21,23 @@ function renderTitleScreen() {
               class="titleStoryText"
             ></p>
 
-            <button id="startButton" class="titleStartButton">
+            <div class="titleButtonArea">
+
+              <button
+                id="startButton"
+                class="titleStartButton"
+              >
                 スタート
-            </button>
+              </button>
+
+              <button
+                id="settingsButton"
+                class="titleSettingsButton"
+              >
+                ⚙️ 設定
+              </button>
+
+            </div>
 
         </div>
     `;
@@ -41,6 +55,14 @@ function renderTitleScreen() {
   document
     .getElementById("startButton")
     .addEventListener("click", renderRuleScreen);
+
+  // -------------------------
+  // 設定ボタン
+  // -------------------------
+
+  document
+    .getElementById("settingsButton")
+    .addEventListener("click", renderSettingsScreen);
 }
 
 // =========================
@@ -92,6 +114,230 @@ function wait(ms) {
 }
 
 // =========================
+// 設定画面
+// =========================
+
+function renderSettingsScreen() {
+  const settings = getGameSettings();
+
+  app.innerHTML = `
+    <div class="screen settingsScreen">
+
+      <h2 class="settingsTitle">
+        ⚙️ ゲーム設定
+      </h2>
+
+      <div class="settingsCard">
+
+        <div class="settingsItem">
+
+          <div class="settingsItemHeader">
+            <span class="settingsItemTitle">
+              👹 鬼の数
+            </span>
+
+            <span
+              id="oniCountValue"
+              class="settingsValue"
+            >
+              ${settings.oniCount}体
+            </span>
+          </div>
+
+          <div class="settingsChoiceArea">
+
+            <button
+              class="settingsChoiceButton oniCountButton"
+              data-value="2"
+            >
+              2体
+            </button>
+
+            <button
+              class="settingsChoiceButton oniCountButton"
+              data-value="3"
+            >
+              3体
+            </button>
+
+            <button
+              class="settingsChoiceButton oniCountButton"
+              data-value="4"
+            >
+              4体
+            </button>
+
+          </div>
+
+          <p class="settingsDescription">
+            鬼の数が多いほど、人間を追い込みやすくなります。
+          </p>
+
+        </div>
+
+        <div class="settingsDivider"></div>
+
+        <div class="settingsItem">
+
+          <div class="settingsItemHeader">
+            <span class="settingsItemTitle">
+              ⚡ 鬼の最大行動回数
+            </span>
+
+            <span
+              id="oniMaxActionsValue"
+              class="settingsValue"
+            >
+              ${settings.oniMaxActions}回
+            </span>
+          </div>
+
+          <div class="settingsChoiceArea">
+
+            <button
+              class="settingsChoiceButton oniMaxActionsButton"
+              data-value="1"
+            >
+              1回
+            </button>
+
+            <button
+              class="settingsChoiceButton oniMaxActionsButton"
+              data-value="2"
+            >
+              2回
+            </button>
+
+            <button
+              class="settingsChoiceButton oniMaxActionsButton"
+              data-value="3"
+            >
+              3回
+            </button>
+
+          </div>
+
+          <p class="settingsDescription">
+            鬼1体が、1ターンに行動できる最大回数です。
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="settingsButtonArea">
+
+        <button
+          id="saveSettingsButton"
+          class="saveSettingsButton"
+        >
+          保存
+        </button>
+
+        <button
+          id="cancelSettingsButton"
+          class="cancelSettingsButton"
+        >
+          戻る
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  registerSettingsEvents(settings);
+
+  updateSettingsButtonState(settings);
+}
+
+// =========================
+// 設定画面イベント登録
+// =========================
+
+function registerSettingsEvents(settings) {
+  const oniCountButtons = document.querySelectorAll(".oniCountButton");
+
+  for (const button of oniCountButtons) {
+    button.addEventListener("click", function () {
+      settings.oniCount = Number(button.dataset.value);
+
+      document.getElementById("oniCountValue").textContent =
+        settings.oniCount + "体";
+
+      updateSettingsButtonState(settings);
+    });
+  }
+
+  const oniMaxActionsButtons = document.querySelectorAll(
+    ".oniMaxActionsButton",
+  );
+
+  for (const button of oniMaxActionsButtons) {
+    button.addEventListener("click", function () {
+      settings.oniMaxActions = Number(button.dataset.value);
+
+      document.getElementById("oniMaxActionsValue").textContent =
+        settings.oniMaxActions + "回";
+
+      updateSettingsButtonState(settings);
+    });
+  }
+
+  document
+    .getElementById("saveSettingsButton")
+    .addEventListener("click", function () {
+      saveGameSettings(settings);
+
+      renderTitleScreen();
+    });
+
+  document
+    .getElementById("cancelSettingsButton")
+    .addEventListener("click", renderTitleScreen);
+}
+
+// =========================
+// 設定選択状態更新
+// =========================
+
+function updateSettingsButtonState(settings) {
+  const oniCountButtons = document.querySelectorAll(".oniCountButton");
+
+  for (const button of oniCountButtons) {
+    const value = Number(button.dataset.value);
+
+    button.classList.toggle("active", value === settings.oniCount);
+  }
+
+  const oniMaxActionsButtons = document.querySelectorAll(
+    ".oniMaxActionsButton",
+  );
+
+  for (const button of oniMaxActionsButtons) {
+    const value = Number(button.dataset.value);
+
+    button.classList.toggle("active", value === settings.oniMaxActions);
+  }
+}
+
+// =========================
+// 現在設定表示HTML
+// =========================
+
+function renderCurrentSettingsBadge() {
+  const settings = getGameSettings();
+
+  return `
+    <div class="currentSettingsBadge">
+      現在設定：
+      鬼${settings.oniCount}体 ／
+      鬼の最大行動${settings.oniMaxActions}回
+    </div>
+  `;
+}
+
+// =========================
 // ルール説明画面
 // =========================
 
@@ -100,6 +346,8 @@ function renderRuleScreen() {
     <div class="screen ruleScreen">
 
       <h2 class="ruleTitle">ルール説明</h2>
+
+      ${renderCurrentSettingsBadge()}
 
       <div class="ruleCard">
         <div class="ruleCardTitle">🎯 目的</div>
@@ -117,7 +365,7 @@ function renderRuleScreen() {
         <div class="ruleIconRow">
           <img src="images/aka-oni01.png" alt="鬼" class="ruleIcon">
           <span>
-            <strong>鬼</strong>：十字路を1マス移動するか、近隣の建物を1か所探索する。
+            <strong>鬼</strong>：十字路を1マス移動する、近隣の建物を1か所探索する。
           </span>
         </div>
 
@@ -170,6 +418,12 @@ function renderRuleScreen() {
   `;
 
   document.getElementById("nextButton").addEventListener("click", function () {
+    // -------------------------
+    // 最新の設定値で鬼を生成
+    // -------------------------
+
+    gameState.oni = createOni();
+
     renderGameScreen({
       day: "Day0",
       turn: "🌙 鬼配置",
@@ -186,9 +440,9 @@ function renderRuleScreen() {
 function renderGameScreen(screenData) {
   app.innerHTML = `
 
-        <div class="screen">
+        <div class="screen gameScreenRoot">
 
-            <div class="gameHeader">
+            <div class="gameHeader gameHeaderWithEndButton">
 
                 <div class="gameHeaderMain">
 
@@ -204,8 +458,10 @@ function renderGameScreen(screenData) {
 
                 </div>
 
-            </div>
+                ${renderFloatingOniTurnEndButton()}
 
+            </div>
+            
             <div id="mapArea"></div>
 
             <div id="placementArea"></div>
@@ -221,6 +477,8 @@ function renderGameScreen(screenData) {
   renderGamePanel(screenData);
 
   registerActionButtonEvent();
+
+  registerFloatingOniTurnEndButtonEvent();
 }
 
 // =========================
@@ -293,8 +551,51 @@ function renderPanelMenuButtons(panelData) {
 }
 
 // =========================
+// 鬼ターン任意終了ボタン描画
+// =========================
+
+function renderFloatingOniTurnEndButton() {
+  if (gameState.phase !== "oniTurn") {
+    return "";
+  }
+
+  return `
+    <button
+      id="floatingEndOniTurnButton"
+      class="floatingOniTurnEndButton"
+      type="button"
+    >
+      ターン終了
+    </button>
+  `;
+}
+
+// =========================
 // ターン終了ボタン描画
 // =========================
+
+function renderFloatingOniTurnEndButton() {
+  if (gameState.phase !== "oniTurn") {
+    return "";
+  }
+
+  if (gameState.panel.type.includes("pass")) {
+    return "";
+  }
+
+  if (gameState.phase === "gameOver") {
+    return "";
+  }
+
+  return `
+    <button
+      id="floatingEndOniTurnButton"
+      class="floatingOniTurnEndButton"
+    >
+      ターン終了
+    </button>
+  `;
+}
 
 function renderTurnEndButton() {
   if (gameState.panel.type.includes("pass")) {
@@ -307,13 +608,13 @@ function renderTurnEndButton() {
     }
 
     return `
-      <button
-        id="endOniTurnButton"
-        class="turnEndButton"
-      >
-        行動終了
-      </button>
-    `;
+    <button
+      id="endOniTurnButton"
+      class="turnEndButton"
+    >
+      行動終了
+    </button>
+  `;
   }
 
   if (gameState.phase === "humanTurn") {
@@ -332,6 +633,27 @@ function renderTurnEndButton() {
   }
 
   return "";
+}
+
+// =========================
+// 鬼ターン終了ボタン
+// イベント登録
+// =========================
+
+function registerFloatingOniTurnEndButtonEvent() {
+  const button = document.getElementById("floatingEndOniTurnButton");
+
+  if (!button) {
+    return;
+  }
+
+  button.addEventListener("click", function (event) {
+    event.preventDefault();
+
+    event.stopPropagation();
+
+    onEndOniTurnButtonClick();
+  });
 }
 
 // =========================
@@ -375,6 +697,8 @@ function renderGameOverScreen(result) {
         </div>
 
         ${renderEndingContent(endingData)}
+
+        ${renderCurrentSettingsBadge()}
 
         <div class="resultInfo resultInfoCompact">
 

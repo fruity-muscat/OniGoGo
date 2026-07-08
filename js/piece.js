@@ -126,7 +126,7 @@ function createMapPieceHtml(pieceType, pieceList) {
     const isActed =
       gameState.phase === "oniTurn" &&
       pieceType === "oni" &&
-      (piece.data.moved || isPieceSunk(piece.data, "oni"));
+      isOniActionComplete(piece.data);
 
     const isFoundHuman = pieceType === "human" && piece.data.found;
 
@@ -160,7 +160,7 @@ function createMapPieceHtml(pieceType, pieceList) {
           const isActed =
             gameState.phase === "oniTurn" &&
             pieceType === "oni" &&
-            (piece.data.moved || isPieceSunk(piece.data, "oni"));
+            isOniActionComplete(piece.data);
 
           const isFoundHuman = pieceType === "human" && piece.data.found;
 

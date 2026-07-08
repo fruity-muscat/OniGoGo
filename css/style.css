@@ -2267,3 +2267,253 @@ body {
 
   overflow: hidden;
 }
+
+/* ==========================
+   ver1.1 Phase2
+   設定画面
+========================== */
+
+.titleButtonArea {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 12px;
+}
+
+.titleSettingsButton {
+  min-width: 110px;
+}
+
+.settingsScreen {
+  padding: 24px 18px;
+
+  box-sizing: border-box;
+
+  background: #eef9ff;
+}
+
+.settingsTitle {
+  margin: 8px 0 22px;
+
+  font-size: 28px;
+
+  text-align: center;
+
+  color: #08324a;
+}
+
+.settingsCard {
+  width: 100%;
+
+  max-width: 420px;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  box-shadow: 0 6px 18px rgba(0, 60, 100, 0.18);
+}
+
+.settingsItemHeader {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+.settingsItemTitle {
+  font-size: 19px;
+
+  font-weight: bold;
+
+  color: #08324a;
+}
+
+.settingsValue {
+  min-width: 54px;
+
+  font-size: 22px;
+
+  font-weight: bold;
+
+  text-align: center;
+
+  color: #d32f2f;
+}
+
+.settingsChoiceArea {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-top: 16px;
+}
+
+.settingsChoiceButton {
+  flex: 1;
+
+  min-height: 48px;
+
+  border: solid 2px #90a4ae;
+
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  color: #37474f;
+
+  font-size: 18px;
+
+  font-weight: bold;
+}
+
+.settingsChoiceButton.active {
+  border-color: #d32f2f;
+
+  background: #ffebee;
+
+  color: #b71c1c;
+
+  box-shadow:
+    0 0 0 2px rgba(211, 47, 47, 0.15),
+    0 0 10px rgba(211, 47, 47, 0.35);
+}
+
+.settingsDescription {
+  margin: 12px 0 0;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+
+  color: #546e7a;
+}
+
+.settingsNotice {
+  margin: 8px 0 0;
+
+  font-size: 13px;
+
+  font-weight: bold;
+
+  color: #ef6c00;
+}
+
+.settingsDivider {
+  height: 1px;
+
+  margin: 22px 0;
+
+  background: #cfd8dc;
+}
+
+.settingsButtonArea {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 12px;
+
+  margin-top: 22px;
+}
+
+.saveSettingsButton,
+.cancelSettingsButton {
+  min-width: 120px;
+}
+
+/* ==========================
+   ver1.1 Phase4
+   現在設定表示
+========================== */
+
+.currentSettingsBadge {
+  display: inline-block;
+
+  max-width: 100%;
+
+  margin: 0 auto 8px;
+
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.9);
+
+  border: solid 1px rgba(63, 95, 104, 0.45);
+
+  color: #08324a;
+
+  font-size: 12px;
+
+  font-weight: bold;
+
+  line-height: 1.4;
+
+  box-shadow: 0 2px 6px rgba(0, 80, 120, 0.12);
+}
+
+.gameOverScreen .currentSettingsBadge {
+  margin: 2px auto 6px;
+
+  font-size: 11px;
+}
+
+/* ==========================
+   ver1.2 Phase4修正
+   鬼ターン終了ボタンを右上に配置
+========================== */
+
+.gameScreenRoot {
+  position: relative;
+}
+
+.gameHeaderWithEndButton {
+  position: relative;
+}
+
+.floatingOniTurnEndButton {
+  position: absolute;
+
+  top: 6px;
+
+  right: 6px;
+
+  z-index: 30;
+
+  min-width: 0;
+
+  width: auto;
+
+  padding: 3px 7px;
+
+  margin: 0;
+
+  font-size: 11px;
+
+  line-height: 1.2;
+
+  font-weight: bold;
+
+  color: #4a148c;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  border: solid 2px #7b1fa2;
+
+  border-radius: 999px;
+
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+}

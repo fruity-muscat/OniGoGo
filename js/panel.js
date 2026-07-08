@@ -140,6 +140,11 @@ function handlePanelAction() {
   if (gameState.panel.nextAction === "showAlreadyActed") {
     const oniId = gameState.turn.selectedOniId;
 
+    if (canOniAct(oniId)) {
+      showOniActionPanel(oniId);
+      return;
+    }
+
     showOniAlreadyActedPanel(oniId);
 
     return;
@@ -216,6 +221,8 @@ function showPassToHumanSetupPanel() {
 // =========================
 
 function showPassToHumanPanel() {
+  gameState.inputLocked = true;
+
   setGamePanel({
     type: "pass warningPass",
 
@@ -250,10 +257,17 @@ function showOniActionPanel(oniId) {
 
   refreshGameView();
 
+  const settings = getGameSettings();
+
+  const remainingActions = getOniRemainingActions(oniId);
+
   setGamePanel({
     type: "menu",
     title: "👹 鬼" + (oniId + 1),
-    messages: ["何をしますか？"],
+    messages: [
+      "残り行動：" + remainingActions + " / " + settings.oniMaxActions,
+      "何をしますか？",
+    ],
     menuButtons: [
       {
         label: "移動",
@@ -277,7 +291,7 @@ function showOniAlreadyActedPanel(oniId) {
   setGamePanel({
     type: "message",
     title: "👹 鬼" + (oniId + 1),
-    messages: ["この鬼はすでに行動済みです。"],
+    messages: ["この鬼は行動を使い切りました。"],
     buttonText: "",
     nextAction: "",
   });

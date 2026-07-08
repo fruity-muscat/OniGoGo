@@ -90,6 +90,46 @@ const HUMAN_ICON =
 const HUMAN_COUNT = 1;
 
 // =========================
+// ゲーム設定
+// =========================
+
+const SETTINGS_KEY = "onigogo_settings_v1";
+
+const DEFAULT_GAME_SETTINGS = {
+  oniCount: 3,
+
+  oniMaxActions: 2,
+};
+
+function loadGameSettings() {
+  const savedText = localStorage.getItem(SETTINGS_KEY);
+
+  if (!savedText) {
+    return { ...DEFAULT_GAME_SETTINGS };
+  }
+
+  try {
+    const saved = JSON.parse(savedText);
+
+    return {
+      oniCount: saved.oniCount || DEFAULT_GAME_SETTINGS.oniCount,
+
+      oniMaxActions: saved.oniMaxActions || DEFAULT_GAME_SETTINGS.oniMaxActions,
+    };
+  } catch (error) {
+    return { ...DEFAULT_GAME_SETTINGS };
+  }
+}
+
+function saveGameSettings(settings) {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+
+function getGameSettings() {
+  return loadGameSettings();
+}
+
+// =========================
 // 足跡
 // =========================
 

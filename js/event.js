@@ -317,7 +317,10 @@ function onActionButtonClick() {
 
   if (gameState.phase === "oniSetup") {
     if (!isOniSetupComplete()) {
-      alert("鬼を3体配置してください。");
+      const settings = getGameSettings();
+
+      alert("鬼を" + settings.oniCount + "体配置してください。");
+
       return;
     }
 
@@ -400,6 +403,8 @@ function startDay1() {
 // =========================
 
 function startHumanTurn() {
+  gameState.inputLocked = false;
+
   resetGamePanel();
 
   gameState.phase = "humanTurn";
@@ -485,7 +490,11 @@ function confirmOniMove() {
     col: move.col,
   };
 
-  oni.moved = true;
+  oni.actionCount++;
+
+  const settings = getGameSettings();
+
+  oni.moved = oni.actionCount >= settings.oniMaxActions;
 
   addReplayHistory("oniMove", {
     oniId,
@@ -502,6 +511,11 @@ function confirmOniMove() {
   resetGamePanel();
 
   refreshGameView();
+
+  if (canOniAct(oniId)) {
+    showOniActionPanel(oniId);
+    return;
+  }
 
   showOniAlreadyActedPanel(oniId);
 }
@@ -545,7 +559,11 @@ function confirmOniSearch() {
 
   const result = getSearchResult(search.row, search.col);
 
-  oni.moved = true;
+  oni.actionCount++;
+
+  const settings = getGameSettings();
+
+  oni.moved = oni.actionCount >= settings.oniMaxActions;
 
   addReplayHistory("oniSearch", {
     oniId,
@@ -571,8 +589,35 @@ function confirmOniSearch() {
 
 function onEndOniTurnButtonClick() {
   if (!isOniTurnComplete()) {
-    return;
+    const ok = confirm("まだ行動できる鬼がいます。\n鬼ターンを終了しますか？");
+
+    if (!ok) {
+      return;
+    }
   }
+
+  // -------------------------
+  // 鬼ターンを強制終了
+  // 残り行動がある鬼も行動終了扱いにする
+  // -------------------------
+
+  const settings = getGameSettings();
+
+  for (const oni of gameState.oni) {
+    if (!oni.alive) {
+      continue;
+    }
+
+    if (isPieceSunk(oni, "oni")) {
+      continue;
+    }
+
+    oni.actionCount = settings.oniMaxActions;
+
+    oni.moved = true;
+  }
+
+  refreshGameView();
 
   const result = checkGameResult("oniTurnEnd");
 
@@ -736,6 +781,8 @@ function startNextOniTurn() {
 
   for (const oni of gameState.oni) {
     oni.moved = false;
+
+    oni.actionCount = 0;
   }
 
   for (const human of gameState.humans) {

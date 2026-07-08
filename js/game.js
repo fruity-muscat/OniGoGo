@@ -7,7 +7,11 @@
 function createOni() {
   const oni = [];
 
-  for (let i = 0; i < ONI_COUNT; i++) {
+  const settings = getGameSettings();
+
+  const oniCount = settings.oniCount;
+
+  for (let i = 0; i < oniCount; i++) {
     oni.push({
       id: i,
 
@@ -18,6 +22,8 @@ function createOni() {
       position: null,
 
       moved: false,
+
+      actionCount: 0,
 
       alive: true,
     });
@@ -172,15 +178,51 @@ function canOniAct(oniId) {
     return false;
   }
 
-  if (oni.moved) {
-    return false;
-  }
-
   if (isPieceSunk(oni, "oni")) {
     return false;
   }
 
-  return true;
+  const settings = getGameSettings();
+
+  return oni.actionCount < settings.oniMaxActions;
+}
+
+// =========================
+// 鬼の残り行動回数取得
+// =========================
+
+function getOniRemainingActions(oniId) {
+  const oni = getOniById(oniId);
+
+  if (!oni) {
+    return 0;
+  }
+
+  const settings = getGameSettings();
+
+  return Math.max(0, settings.oniMaxActions - oni.actionCount);
+}
+
+// =========================
+// 鬼の全行動完了判定
+// =========================
+
+function isOniActionComplete(oni) {
+  if (!oni) {
+    return true;
+  }
+
+  if (!oni.alive) {
+    return true;
+  }
+
+  if (isPieceSunk(oni, "oni")) {
+    return true;
+  }
+
+  const settings = getGameSettings();
+
+  return oni.actionCount >= settings.oniMaxActions;
 }
 
 // =========================
@@ -334,9 +376,19 @@ function getSearchResult(row, col) {
 // =========================
 
 function isOniTurnComplete() {
-  return gameState.oni.every(
-    (oni) => !oni.alive || oni.moved || isPieceSunk(oni, "oni"),
-  );
+  const settings = getGameSettings();
+
+  return gameState.oni.every((oni) => {
+    if (!oni.alive) {
+      return true;
+    }
+
+    if (isPieceSunk(oni, "oni")) {
+      return true;
+    }
+
+    return oni.actionCount >= settings.oniMaxActions;
+  });
 }
 
 // =========================
@@ -910,6 +962,8 @@ function cloneReplayPieces(pieces) {
     alive: piece.alive,
 
     moved: piece.moved,
+
+    actionCount: piece.actionCount || 0,
 
     escaped: piece.escaped || false,
 
