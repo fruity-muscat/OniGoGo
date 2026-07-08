@@ -162,7 +162,7 @@ function handlePanelAction() {
       turn: gameState.phase === "oniTurn" ? "🌙 鬼ターン" : "👤 人間ターン",
       message:
         gameState.phase === "oniTurn"
-          ? "鬼の行動を開始してください"
+          ? "鬼の行動を開始してください。<br>（人間も画面を見てOKです。）"
           : "人間の行動を開始してください",
       buttonText: "行動終了",
     });

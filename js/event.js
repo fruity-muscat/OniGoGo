@@ -385,7 +385,7 @@ function startDay1() {
   renderGameScreen({
     day: "Day1",
     turn: "🌙 鬼ターン",
-    message: "鬼の行動を開始してください",
+    message: "鬼の行動を開始してください。<br>（人間も画面を見てOKです。）",
     buttonText: "行動終了",
   });
 
@@ -462,6 +462,8 @@ function selectOniMoveTarget(event) {
 
   gameState.turn.pendingMove = { row, col };
 
+  refreshGameView();
+
   showOniMoveConfirmPanel();
 }
 
@@ -533,6 +535,8 @@ function selectOniSearchTarget(event) {
   }
 
   gameState.turn.pendingSearch = { row, col };
+
+  refreshGameView();
 
   showOniSearchConfirmPanel();
 }
@@ -680,6 +684,8 @@ function selectHumanMoveTarget(event) {
 
   gameState.turn.pendingMove = { row, col };
 
+  refreshGameView();
+
   showHumanMoveConfirmPanel();
 }
 
@@ -792,7 +798,7 @@ function startNextOniTurn() {
   renderGameScreen({
     day: "Day" + gameState.day,
     turn: "🌙 鬼ターン",
-    message: "鬼の行動を開始してください",
+    message: "鬼の行動を開始してください。<br>（人間も画面を見てOKです。）",
     buttonText: "行動終了",
   });
 

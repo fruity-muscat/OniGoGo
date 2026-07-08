@@ -97,6 +97,8 @@ function renderBuilding(row, col, buildingIndex) {
 
       ${building.icon}
 
+      ${renderBuildingActionPreview(buildingRow, buildingCol)}
+
     </div>
   `;
 }
@@ -128,8 +130,64 @@ function renderCrossroad(row, col) {
       data-row="${crossroadRow}"
       data-col="${crossroadCol}"
     >
+    ${renderCrossroadActionPreview(crossroadRow, crossroadCol)}
     </div>
   `;
+}
+
+// =========================
+// 建物上の行動先プレビュー描画
+// =========================
+
+function renderBuildingActionPreview(row, col) {
+  if (
+    gameState.phase === "humanTurn" &&
+    gameState.turn.pendingMove &&
+    gameState.turn.pendingMove.row === row &&
+    gameState.turn.pendingMove.col === col
+  ) {
+    return `
+      <div class="actionPreview actionPreviewHuman">
+        ${HUMAN_ICON}
+      </div>
+    `;
+  }
+
+  if (
+    gameState.phase === "oniTurn" &&
+    gameState.turn.pendingSearch &&
+    gameState.turn.pendingSearch.row === row &&
+    gameState.turn.pendingSearch.col === col
+  ) {
+    return `
+      <div class="actionPreview actionPreviewSearch">
+        ${ONI_ICON}
+      </div>
+    `;
+  }
+
+  return "";
+}
+
+// =========================
+// 十字路上の行動先プレビュー描画
+// =========================
+
+function renderCrossroadActionPreview(row, col) {
+  if (
+    gameState.phase === "oniTurn" &&
+    gameState.turn.pendingMove &&
+    gameState.turn.pendingMove.row === row &&
+    gameState.turn.pendingMove.col === col
+  ) {
+    return `
+      <div class="actionPreview actionPreviewOni">
+        ${ONI_ICON}
+      </div>
+    `;
+  }
+
+  return "";
 }
 
 // =========================
